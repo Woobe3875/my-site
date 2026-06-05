@@ -1,83 +1,80 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-theme="light">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>나의 링크 페이지</title>
-    <!-- 구글 폰트 적용 (깔끔한 프리텐다드 폰트) -->
-    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
-    <style>
-        body {
-            font-family: 'Pretendard', sans-serif;
-            /* 배경을 화사한 그라데이션으로 변경 */
-            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-        }
-        .profile-card {
-            text-align: center;
-            background: white;
-            padding: 40px 30px;
-            border-radius: 24px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            width: 340px;
-        }
-        /* 프로필 이미지 꾸미기 */
-        .profile-img {
-            width: 110px;
-            height: 110px;
-            border-radius: 50%; /* 이미지를 동그랗게 */
-            object-fit: cover;
-            border: 4px solid #ffffff;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-        h1 {
-            font-size: 22px;
-            color: #222222;
-            margin: 20px 0 8px 0;
-        }
-        .sub-text {
-            font-size: 14px;
-            color: #777777;
-            margin-bottom: 30px;
-        }
-        /* 링크 버튼 꾸미기 */
-        .link-btn {
-            display: block;
-            background-color: #4a90e2;
-            color: white;
-            padding: 14px;
-            margin: 12px 0;
-            text-decoration: none; /* 밑줄 없애기 */
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 15px;
-            transition: all 0.3s ease;
-        }
-        /* 버튼에 마우스를 올렸을 때 효과 */
-        .link-btn:hover {
-            background-color: #357abd;
-            transform: translateY(-3px); /* 살짝 위로 떠오름 */
-            box-shadow: 0 5px 15px rgba(74, 144, 226, 0.3);
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>내 블로그</title>
+
+  <!-- ★ 1. CSS 연결 ★ -->
+  <link rel="stylesheet" href="blog-features.css" />
 </head>
 <body>
-    <div class="profile-card">
-        <!-- [수정포인트 1] 나중에 내 사진 파일명으로 바꾸는 곳입니다 -->
-        <img src="https://picsum.photos/200" alt="프로필 사진" class="profile-img">
-        
-        <!-- [수정포인트 2] 이름과 소개글을 내 정보로 바꾸세요 -->
-        <h1>홍길동 (Gildong Hong)</h1>
-        <p class="sub-text">방문해 주셔서 감사합니다. 저의 채널들을 확인해 보세요! ✨</p>
-        
-        <!-- [수정포인트 3] href="주소" 부분에 내 진짜 SNS 주소를 넣으세요 -->
-        <a href="https://instagram.com" target="_blank" class="link-btn">📷 인스타그램 구경하기</a>
-        <a href="https://blog.naver.com" target="_blank" class="link-btn">📝 네이버 블로그 방문</a>
-        <a href="mailto:your-email@gmail.com" class="link-btn">✉️ 이메일 보내기</a>
-    </div>
+
+  <!-- ★ 2. 다크모드 버튼 ★ -->
+  <button id="theme-toggle" type="button" aria-label="다크 모드로 전환">
+    <span class="icon-sun" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+        <circle cx="12" cy="12" r="5"/>
+        <line x1="12" y1="1" x2="12" y2="3"/>
+        <line x1="12" y1="21" x2="12" y2="23"/>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+        <line x1="1" y1="12" x2="3" y2="12"/>
+        <line x1="21" y1="12" x2="23" y2="12"/>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+      </svg>
+    </span>
+    <span class="icon-moon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      </svg>
+    </span>
+    <span class="toggle-label">다크 모드</span>
+  </button>
+
+  <!-- ★ 3. TOC 사이드바 ★ -->
+  <nav id="toc-sidebar" aria-label="목차">
+    <p class="toc-title">목차</p>
+    <ul></ul>
+  </nav>
+
+  <!-- ★ 4. 본문 콘텐츠 (여기에 포스트 내용을 작성) ★ -->
+  <main style="max-width:780px; margin:60px auto; padding:0 24px;">
+
+    <h1>나의 첫 번째 블로그 포스트</h1>
+
+    <article class="post-content">
+
+      <h2>첫 번째 섹션</h2>
+      <p>여기에 본문 내용을 작성합니다.</p>
+
+      <pre><code class="language-javascript">// 코드 블록 예시 – 복사 버튼이 자동으로 생깁니다
+console.log("Hello, Blog!");
+</code></pre>
+
+      <h2>두 번째 섹션</h2>
+      <p>스크롤을 내리면 우측에 목차가 하이라이트됩니다.</p>
+
+      <h3>소제목</h3>
+      <p>H3 태그도 TOC에 자동으로 포함됩니다.</p>
+
+    </article>
+  </main>
+
+  <!-- ★ 5. 맨 위로 가기 버튼 ★ -->
+  <button id="scroll-to-top" type="button" aria-label="맨 위로 가기">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+         width="18" height="18">
+      <polyline points="18 15 12 9 6 15"/>
+    </svg>
+  </button>
+
+  <!-- ★ 6. JS 연결 (반드시 </body> 바로 위) ★ -->
+  <script src="blog-features.js"></script>
+
 </body>
 </html>
