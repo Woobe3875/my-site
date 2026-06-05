@@ -994,12 +994,12 @@ const DEFAULT_CONTENT = {
 };
 
 // 🌟 [수정 포인트 1] Supabase 설정 정보를 여기에 입력하세요.
-const SUPABASE_URL = 'https://eeljbkexhoozxkgwdgpr.supabase.co/rest/v1/';
+const SUPABASE_URL = 'https://eeljbkexhoozxkgwdgpr.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVlbGpia2V4aG9venhrZ3dkZ3ByIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2MDM5OTUsImV4cCI6MjA5NjE3OTk5NX0.UT64WnPKZqfC1huZCg3G13GK_ISnWaf7WKtJVSdpgUs';
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // 🌟 [수정 포인트 2] 블로그 글 수정을 막아줄 나만의 비밀번호를 설정하세요.
-const ADMIN_PASSWORD = "비밀번호1234"; 
+const ADMIN_PASSWORD = "1234"; 
 
 // ── 클라우드 DB 연동 공용 함수 ──
 async function setDBItem(key, value) {
