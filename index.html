@@ -1,80 +1,1687 @@
 <!DOCTYPE html>
 <html lang="ko" data-theme="light">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>내 블로그</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title id="site-title-tag">내 블로그</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Pretendard:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+/* ═══════════════════════════════════════════
+   CSS 변수 & 테마
+═══════════════════════════════════════════ */
+:root {
+  --sidebar-w: 260px;
+  --header-h: 56px;
 
-  <!-- ★ 1. CSS 연결 ★ -->
-  <link rel="stylesheet" href="blog-features.css" />
+  --bg:          #fafaf8;
+  --bg-surface:  #f3f2ee;
+  --bg-card:     #ffffff;
+  --bg-hover:    rgba(0,0,0,0.04);
+  --bg-active:   rgba(0,0,0,0.07);
+
+  --text:        #1a1a17;
+  --text-2:      #5a5a52;
+  --text-3:      #9a9a8e;
+  --text-inv:    #ffffff;
+
+  --accent:      #2563eb;
+  --accent-2:    #1d4ed8;
+  --accent-bg:   #eff6ff;
+  --accent-text: #1e40af;
+
+  --border:      rgba(0,0,0,0.08);
+  --border-2:    rgba(0,0,0,0.14);
+
+  --code-bg:     #1a1b26;
+  --code-text:   #c0caf5;
+
+  --shadow-sm:   0 1px 4px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md:   0 4px 16px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.05);
+  --shadow-lg:   0 12px 40px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.07);
+
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 16px;
+  --r-xl: 20px;
+
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --t-fast: 140ms;
+  --t-std:  220ms;
+
+  /* 사용자가 커스터마이즈하는 디자인 변수 */
+  --font-body:    'Pretendard', sans-serif;
+  --font-display: 'Nanum Myeongjo', serif;
+  --font-size-base: 16px;
+  --line-height-base: 1.8;
+  --content-max-w: 720px;
+  --prose-color:  var(--text-2);
+}
+
+[data-theme="dark"] {
+  --bg:          #111110;
+  --bg-surface:  #1a1a18;
+  --bg-card:     #1f1f1d;
+  --bg-hover:    rgba(255,255,255,0.05);
+  --bg-active:   rgba(255,255,255,0.09);
+
+  --text:        #f0efe8;
+  --text-2:      #a8a89a;
+  --text-3:      #68685e;
+  --text-inv:    #111110;
+
+  --accent:      #60a5fa;
+  --accent-2:    #93c5fd;
+  --accent-bg:   #172033;
+  --accent-text: #93c5fd;
+
+  --border:      rgba(255,255,255,0.07);
+  --border-2:    rgba(255,255,255,0.13);
+
+  --bg-card:     #1e1e1c;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  background: var(--bg);
+  color: var(--text);
+  transition: background var(--t-std) var(--ease), color var(--t-std) var(--ease);
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ═══════════════════════════════════════════
+   왼쪽 사이드바
+═══════════════════════════════════════════ */
+#sidebar {
+  position: fixed;
+  top: 0; left: 0;
+  width: var(--sidebar-w);
+  height: 100vh;
+  background: var(--bg-surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  transition: background var(--t-std) var(--ease), border-color var(--t-std) var(--ease);
+  overflow: hidden;
+}
+
+/* 사이드바 헤더 (블로그 제목 영역) */
+#sidebar-header {
+  padding: 20px 18px 16px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+#blog-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#blog-title {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.3;
+  flex: 1;
+  cursor: default;
+  transition: color var(--t-fast) var(--ease);
+}
+
+#blog-title[contenteditable="true"] {
+  cursor: text;
+  outline: none;
+  background: var(--bg-hover);
+  border-radius: var(--r-sm);
+  padding: 2px 6px;
+  margin: -2px -6px;
+}
+
+#blog-tagline {
+  font-size: 12px;
+  color: var(--text-3);
+  margin-top: 4px;
+  cursor: default;
+  line-height: 1.4;
+}
+
+#blog-tagline[contenteditable="true"] {
+  cursor: text;
+  outline: none;
+  background: var(--bg-hover);
+  border-radius: var(--r-sm);
+  padding: 2px 4px;
+  margin: 2px -4px 0;
+}
+
+/* 사이드바 내비게이션 메뉴 목록 */
+#sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 10px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-2) transparent;
+}
+
+#sidebar-nav::-webkit-scrollbar { width: 4px; }
+#sidebar-nav::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 4px; }
+
+/* 섹션 그룹 라벨 */
+.nav-section-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  padding: 10px 8px 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* 개별 Nav 아이템 */
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: var(--r-md);
+  cursor: pointer;
+  color: var(--text-2);
+  font-size: 14px;
+  font-weight: 400;
+  transition: background var(--t-fast) var(--ease), color var(--t-fast) var(--ease);
+  position: relative;
+  user-select: none;
+}
+
+.nav-item:hover { background: var(--bg-hover); color: var(--text); }
+
+.nav-item.active {
+  background: var(--bg-active);
+  color: var(--text);
+  font-weight: 500;
+}
+
+.nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: -10px; top: 50%;
+  transform: translateY(-50%);
+  width: 3px; height: 18px;
+  background: var(--accent);
+  border-radius: 0 3px 3px 0;
+}
+
+.nav-item .nav-icon {
+  width: 18px; height: 18px;
+  flex-shrink: 0;
+  opacity: 0.55;
+}
+.nav-item.active .nav-icon { opacity: 1; }
+
+.nav-item .nav-label {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nav-item .nav-label[contenteditable="true"] {
+  cursor: text;
+  outline: none;
+  background: var(--bg-card);
+  border-radius: 4px;
+  padding: 1px 4px;
+  margin: -1px -4px;
+  white-space: nowrap;
+}
+
+/* 아이템 삭제 버튼 (편집 모드에서만) */
+.nav-item .nav-delete {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--text-3);
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 14px;
+  transition: background var(--t-fast), color var(--t-fast);
+}
+
+.nav-item .nav-delete:hover { background: #fecaca; color: #dc2626; }
+
+/* 새 글 추가 버튼 */
+#add-nav-item {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: var(--r-md);
+  cursor: pointer;
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 500;
+  border: 1.5px dashed var(--accent);
+  margin: 4px 0;
+  transition: background var(--t-fast) var(--ease);
+  background: transparent;
+  width: 100%;
+}
+
+#add-nav-item:hover { background: var(--accent-bg); }
+
+/* 사이드바 하단 – 설정/다크모드 */
+#sidebar-footer {
+  padding: 12px 10px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.sidebar-footer-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: var(--r-md);
+  cursor: pointer;
+  color: var(--text-2);
+  font-size: 13px;
+  font-weight: 500;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  transition: background var(--t-fast) var(--ease), color var(--t-fast) var(--ease);
+}
+
+.sidebar-footer-btn:hover { background: var(--bg-hover); color: var(--text); }
+.sidebar-footer-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+/* ═══════════════════════════════════════════
+   메인 콘텐츠 영역
+═══════════════════════════════════════════ */
+#main-wrap {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 상단 헤더 바 */
+#topbar {
+  position: sticky;
+  top: 0; z-index: 50;
+  height: var(--header-h);
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 32px;
+  gap: 12px;
+  transition: background var(--t-std) var(--ease), border-color var(--t-std) var(--ease);
+}
+
+#topbar-breadcrumb {
+  font-size: 14px;
+  color: var(--text-3);
+  flex: 1;
+}
+
+#topbar-breadcrumb span {
+  color: var(--text-2);
+  font-weight: 500;
+}
+
+/* 편집 모드 토글 버튼 */
+#edit-mode-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 14px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--border-2);
+  background: var(--bg-card);
+  color: var(--text-2);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--t-fast) var(--ease);
+  box-shadow: var(--shadow-sm);
+}
+
+#edit-mode-btn:hover { color: var(--text); box-shadow: var(--shadow-md); }
+#edit-mode-btn.active { background: var(--accent); color: #fff; border-color: var(--accent-2); }
+#edit-mode-btn svg { width: 15px; height: 15px; }
+
+/* 디자인 설정 버튼 */
+#design-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 14px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--border-2);
+  background: var(--bg-card);
+  color: var(--text-2);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--t-fast) var(--ease);
+  box-shadow: var(--shadow-sm);
+}
+
+#design-btn:hover { color: var(--text); box-shadow: var(--shadow-md); }
+
+/* ═══════════════════════════════════════════
+   포스트 콘텐츠 영역
+═══════════════════════════════════════════ */
+#content-area {
+  flex: 1;
+  padding: 56px 64px 100px;
+  max-width: calc(var(--content-max-w) + 128px);
+}
+
+/* 페이지 헤더 */
+#page-header { margin-bottom: 48px; }
+
+#post-category {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-text);
+  background: var(--accent-bg);
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 100px;
+  margin-bottom: 16px;
+}
+
+#post-category[contenteditable="true"] {
+  cursor: text;
+  outline: none;
+  border: 1.5px solid var(--accent);
+}
+
+#post-title {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 4vw, 42px);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+
+#post-title[contenteditable="true"] {
+  cursor: text;
+  outline: none;
+  border-bottom: 2px dashed var(--accent);
+  padding-bottom: 4px;
+}
+
+#post-meta {
+  font-size: 13px;
+  color: var(--text-3);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+#post-date[contenteditable="true"] {
+  cursor: text;
+  outline: none;
+  background: var(--bg-hover);
+  border-radius: var(--r-sm);
+  padding: 2px 6px;
+}
+
+/* 구분선 */
+.divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 32px 0;
+}
+
+/* 본문 */
+#post-body {
+  max-width: var(--content-max-w);
+  color: var(--prose-color);
+}
+
+#post-body[contenteditable="true"] {
+  outline: none;
+  cursor: text;
+}
+
+#post-body h2 {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 52px 0 16px;
+  letter-spacing: -0.02em;
+  scroll-margin-top: 80px;
+}
+
+#post-body h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 32px 0 12px;
+  scroll-margin-top: 80px;
+}
+
+#post-body p { margin-bottom: 20px; }
+
+#post-body ul, #post-body ol {
+  padding-left: 24px;
+  margin-bottom: 20px;
+}
+
+#post-body li { margin-bottom: 6px; }
+
+#post-body strong { color: var(--text); font-weight: 600; }
+
+#post-body a { color: var(--accent); text-underline-offset: 3px; }
+
+#post-body blockquote {
+  border-left: 3px solid var(--accent);
+  padding: 12px 20px;
+  margin: 24px 0;
+  background: var(--accent-bg);
+  border-radius: 0 var(--r-sm) var(--r-sm) 0;
+  font-style: italic;
+  color: var(--text-2);
+}
+
+/* 코드 블록 */
+.code-wrapper {
+  position: relative;
+  margin: 24px 0;
+  border-radius: var(--r-md);
+  overflow: hidden;
+}
+
+.code-wrapper pre {
+  margin: 0;
+  padding: 44px 20px 20px;
+  background: var(--code-bg);
+  color: var(--code-text);
+  border-radius: var(--r-md);
+  overflow-x: auto;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.code-lang-badge {
+  position: absolute;
+  top: 12px; left: 14px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+  font-family: monospace;
+}
+
+.copy-btn {
+  position: absolute;
+  top: 10px; right: 10px;
+  display: flex; align-items: center; gap: 5px;
+  padding: 5px 10px;
+  border-radius: var(--r-sm);
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.6);
+  font-size: 12px; font-weight: 500;
+  cursor: pointer;
+  transition: background var(--t-fast), color var(--t-fast);
+  user-select: none;
+}
+
+.copy-btn:hover { background: rgba(255,255,255,0.16); color: rgba(255,255,255,0.9); }
+.copy-btn.copied { background: rgba(30,180,100,0.18); color: #6ee7b7; border-color: rgba(110,231,183,0.3); }
+.copy-btn svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ═══════════════════════════════════════════
+   편집 모드 툴바 (본문 위)
+═══════════════════════════════════════════ */
+#editor-toolbar {
+  display: none;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-md);
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+#editor-toolbar.visible { display: flex; }
+
+.tb-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px;
+  border-radius: var(--r-sm);
+  border: none;
+  background: transparent;
+  color: var(--text-2);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  transition: background var(--t-fast), color var(--t-fast);
+}
+
+.tb-btn:hover { background: var(--bg-hover); color: var(--text); }
+.tb-btn svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+.tb-sep {
+  width: 1px; height: 20px;
+  background: var(--border);
+  margin: 0 4px;
+  flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════
+   디자인 설정 패널 (슬라이드오버)
+═══════════════════════════════════════════ */
+#design-panel {
+  position: fixed;
+  top: 0; right: -400px;
+  width: 360px;
+  height: 100vh;
+  background: var(--bg-card);
+  border-left: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  transition: right var(--t-std) var(--ease);
+  overflow: hidden;
+}
+
+#design-panel.open { right: 0; }
+
+#design-panel-header {
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+#design-panel-header h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+#design-panel-close {
+  width: 28px; height: 28px;
+  border-radius: var(--r-sm);
+  border: none; background: transparent;
+  color: var(--text-3); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  transition: background var(--t-fast), color var(--t-fast);
+}
+
+#design-panel-close:hover { background: var(--bg-hover); color: var(--text); }
+
+#design-panel-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.dp-section { margin-bottom: 28px; }
+
+.dp-section-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 12px;
+}
+
+.dp-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  gap: 12px;
+}
+
+.dp-label {
+  font-size: 13px;
+  color: var(--text-2);
+  flex: 1;
+}
+
+.dp-control {
+  flex-shrink: 0;
+}
+
+/* 패널 내 슬라이더 */
+.dp-slider {
+  width: 120px;
+  height: 4px;
+  accent-color: var(--accent);
+}
+
+/* 패널 내 색상 선택 */
+.dp-color {
+  width: 32px; height: 32px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border-2);
+  cursor: pointer;
+  overflow: hidden;
+  padding: 0;
+}
+
+/* 패널 내 select */
+.dp-select {
+  padding: 5px 10px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border-2);
+  background: var(--bg-surface);
+  color: var(--text);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+/* 색상 팔레트 프리셋 */
+.color-presets {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.color-preset {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: border-color var(--t-fast), transform var(--t-fast);
+}
+
+.color-preset:hover { transform: scale(1.15); }
+.color-preset.selected { border-color: var(--text); }
+
+/* ═══════════════════════════════════════════
+   맨 위로 가기 버튼
+═══════════════════════════════════════════ */
+#scroll-top {
+  position: fixed;
+  bottom: 32px; right: 28px;
+  z-index: 90;
+  width: 42px; height: 42px;
+  border-radius: 50%;
+  border: 1px solid var(--border-2);
+  background: var(--bg-card);
+  color: var(--text-2);
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0;
+  transform: translateY(12px);
+  pointer-events: none;
+  transition: opacity var(--t-std) var(--ease), transform var(--t-std) var(--ease), color var(--t-fast), box-shadow var(--t-fast);
+}
+
+#scroll-top.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
+#scroll-top:hover { color: var(--accent); box-shadow: var(--shadow-lg); }
+#scroll-top svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ═══════════════════════════════════════════
+   오버레이 (디자인 패널 뒤)
+═══════════════════════════════════════════ */
+#overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.3);
+  z-index: 190;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--t-std) var(--ease);
+  backdrop-filter: blur(2px);
+}
+
+#overlay.visible { opacity: 1; pointer-events: auto; }
+
+/* ═══════════════════════════════════════════
+   편집 모드 시각 피드백
+═══════════════════════════════════════════ */
+.edit-mode [contenteditable="true"] {
+  border-radius: var(--r-sm);
+  transition: outline var(--t-fast);
+}
+
+.edit-mode [contenteditable="true"]:hover {
+  outline: 1.5px dashed var(--border-2);
+}
+
+.edit-mode [contenteditable="true"]:focus {
+  outline: 2px solid var(--accent) !important;
+}
+
+/* 편집 모드 배너 */
+#edit-banner {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 20px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+#edit-banner.visible { display: flex; }
+
+#edit-banner svg { width: 15px; height: 15px; stroke: #fff; fill: none; stroke-width: 2; }
+
+/* ═══════════════════════════════════════════
+   반응형 (모바일)
+═══════════════════════════════════════════ */
+@media (max-width: 900px) {
+  #sidebar {
+    transform: translateX(-100%);
+    transition: transform var(--t-std) var(--ease);
+  }
+
+  #sidebar.open { transform: translateX(0); }
+
+  #main-wrap { margin-left: 0; }
+
+  #content-area { padding: 32px 24px 80px; }
+
+  #mobile-menu-btn { display: flex !important; }
+}
+
+#mobile-menu-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px; height: 36px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--border-2);
+  background: transparent;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: background var(--t-fast);
+}
+
+#mobile-menu-btn:hover { background: var(--bg-hover); }
+#mobile-menu-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ═══════════════════════════════════════════
+   저장 완료 토스트
+═══════════════════════════════════════════ */
+#toast {
+  position: fixed;
+  bottom: 24px; left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: #18181b;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 10px 18px;
+  border-radius: var(--r-xl);
+  box-shadow: var(--shadow-lg);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--t-std) var(--ease), transform var(--t-std) var(--ease);
+  z-index: 999;
+  display: flex; align-items: center; gap: 8px;
+  white-space: nowrap;
+}
+
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
 </head>
 <body>
 
-  <!-- ★ 2. 다크모드 버튼 ★ -->
-  <button id="theme-toggle" type="button" aria-label="다크 모드로 전환">
-    <span class="icon-sun" aria-hidden="true">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-           stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
-        <circle cx="12" cy="12" r="5"/>
-        <line x1="12" y1="1" x2="12" y2="3"/>
-        <line x1="12" y1="21" x2="12" y2="23"/>
-        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-        <line x1="1" y1="12" x2="3" y2="12"/>
-        <line x1="21" y1="12" x2="23" y2="12"/>
-        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
-        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-      </svg>
-    </span>
-    <span class="icon-moon" aria-hidden="true">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-           stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
-        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-      </svg>
-    </span>
-    <span class="toggle-label">다크 모드</span>
-  </button>
+<!-- ═══════════════════════════════════════════
+     왼쪽 사이드바
+═══════════════════════════════════════════ -->
+<aside id="sidebar">
 
-  <!-- ★ 3. TOC 사이드바 ★ -->
-  <nav id="toc-sidebar" aria-label="목차">
-    <p class="toc-title">목차</p>
-    <ul></ul>
+  <!-- 블로그 제목 / 태그라인 -->
+  <div id="sidebar-header">
+    <div id="blog-title-wrap">
+      <div id="blog-title">내 블로그</div>
+    </div>
+    <div id="blog-tagline">개발 · 공부 · 일상의 기록</div>
+  </div>
+
+  <!-- 내비게이션 메뉴 -->
+  <nav id="sidebar-nav">
+    <div class="nav-section-label">
+      <span>페이지</span>
+    </div>
+
+    <!-- 메뉴 아이템들 (JS로 동적 생성·관리) -->
+    <div id="nav-items-list">
+      <!-- 기본 아이템 예시 -->
+      <div class="nav-item active" data-page="home">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+        <span class="nav-label">홈</span>
+        <button class="nav-delete" aria-label="삭제">×</button>
+      </div>
+      <div class="nav-item" data-page="post1">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
+        </svg>
+        <span class="nav-label">블로그 기능 추가하기</span>
+        <button class="nav-delete" aria-label="삭제">×</button>
+      </div>
+      <div class="nav-item" data-page="post2">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
+        </svg>
+        <span class="nav-label">JavaScript 공부 노트</span>
+        <button class="nav-delete" aria-label="삭제">×</button>
+      </div>
+      <div class="nav-item" data-page="about">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+        </svg>
+        <span class="nav-label">소개</span>
+        <button class="nav-delete" aria-label="삭제">×</button>
+      </div>
+    </div>
+
+    <!-- 새 페이지 추가 버튼 (편집 모드에서 표시) -->
+    <button id="add-nav-item">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+      새 페이지 추가
+    </button>
   </nav>
 
-  <!-- ★ 4. 본문 콘텐츠 (여기에 포스트 내용을 작성) ★ -->
-  <main style="max-width:780px; margin:60px auto; padding:0 24px;">
+  <!-- 하단 버튼들 -->
+  <div id="sidebar-footer">
+    <button class="sidebar-footer-btn" id="theme-btn">
+      <svg id="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+        <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+      </svg>
+      <svg id="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      </svg>
+      <span id="theme-label">다크 모드</span>
+    </button>
+  </div>
+</aside>
 
-    <h1>나의 첫 번째 블로그 포스트</h1>
 
-    <article class="post-content">
+<!-- ═══════════════════════════════════════════
+     메인 콘텐츠
+═══════════════════════════════════════════ -->
+<div id="main-wrap">
 
-      <h2>첫 번째 섹션</h2>
-      <p>여기에 본문 내용을 작성합니다.</p>
+  <!-- 편집 모드 안내 배너 -->
+  <div id="edit-banner">
+    <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+    텍스트를 직접 클릭해서 수정할 수 있습니다 · 변경사항은 자동으로 브라우저에 저장됩니다
+  </div>
 
-      <pre><code class="language-javascript">// 코드 블록 예시 – 복사 버튼이 자동으로 생깁니다
-console.log("Hello, Blog!");
-</code></pre>
+  <!-- 상단 툴바 -->
+  <header id="topbar">
+    <button id="mobile-menu-btn" aria-label="메뉴 열기">
+      <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
 
-      <h2>두 번째 섹션</h2>
-      <p>스크롤을 내리면 우측에 목차가 하이라이트됩니다.</p>
+    <div id="topbar-breadcrumb">블로그 / <span id="breadcrumb-current">홈</span></div>
 
-      <h3>소제목</h3>
-      <p>H3 태그도 TOC에 자동으로 포함됩니다.</p>
+    <button id="design-btn" onclick="toggleDesignPanel()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/>
+        <circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/>
+        <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/>
+      </svg>
+      디자인
+    </button>
 
-    </article>
+    <button id="edit-mode-btn" onclick="toggleEditMode()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+      </svg>
+      <span id="edit-btn-label">편집</span>
+    </button>
+  </header>
+
+  <!-- 포스트 콘텐츠 -->
+  <main id="content-area">
+
+    <!-- 편집 툴바 -->
+    <div id="editor-toolbar">
+      <button class="tb-btn" onclick="execCmd('bold')" title="굵게 (Ctrl+B)"><b>B</b></button>
+      <button class="tb-btn" onclick="execCmd('italic')" title="기울임 (Ctrl+I)"><i>I</i></button>
+      <button class="tb-btn" onclick="execCmd('underline')" title="밑줄 (Ctrl+U)"><u>U</u></button>
+      <div class="tb-sep"></div>
+      <button class="tb-btn" onclick="insertHeading(2)" title="H2 제목">H2</button>
+      <button class="tb-btn" onclick="insertHeading(3)" title="H3 소제목">H3</button>
+      <div class="tb-sep"></div>
+      <button class="tb-btn" onclick="execCmd('insertUnorderedList')" title="목록">
+        <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+      </button>
+      <button class="tb-btn" onclick="execCmd('insertOrderedList')" title="번호 목록">
+        <svg viewBox="0 0 24 24"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M4 6h1v4"/><path d="M4 10h2"/><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>
+      </button>
+      <button class="tb-btn" onclick="insertBlockquote()" title="인용구">
+        <svg viewBox="0 0 24 24"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/></svg>
+      </button>
+      <button class="tb-btn" onclick="insertCodeBlock()" title="코드 블록">
+        <svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+      </button>
+      <div class="tb-sep"></div>
+      <button class="tb-btn" onclick="execCmd('createLink', prompt('링크 URL:'))" title="링크">
+        <svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+      </button>
+      <div class="tb-sep"></div>
+      <button class="tb-btn" style="color:#ef4444" onclick="if(confirm('본문 내용을 초기화할까요?')) resetBody()" title="초기화">
+        <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>
+      </button>
+    </div>
+
+    <!-- 포스트 헤더 -->
+    <div id="page-header">
+      <div id="post-category">Tutorial</div>
+      <h1 id="post-title">나의 첫 번째 블로그 포스트</h1>
+      <div id="post-meta">
+        <span id="post-date">2025년 6월 5일</span>
+        <span>·</span>
+        <span id="post-readtime">읽는 시간 약 5분</span>
+      </div>
+    </div>
+
+    <hr class="divider"/>
+
+    <!-- 포스트 본문 -->
+    <div id="post-body">
+      <h2>소개</h2>
+      <p>이 블로그는 GitHub Pages로 운영되는 순수 HTML 정적 사이트입니다. <strong>편집 버튼</strong>을 누르면 이 텍스트를 직접 수정할 수 있습니다.</p>
+
+      <h2>기능 목록</h2>
+      <ul>
+        <li>왼쪽 사이드바 내비게이션 — 페이지 추가 / 이름 변경 / 삭제 가능</li>
+        <li>인라인 본문 편집 — 클릭해서 바로 수정</li>
+        <li>다크 모드 전환 — 설정이 브라우저에 저장됨</li>
+        <li>디자인 커스터마이즈 — 색상, 폰트, 레이아웃 설정</li>
+      </ul>
+
+      <h2>코드 블록 예시</h2>
+      <p>코드 블록에는 복사 버튼이 자동으로 붙습니다:</p>
+      <pre><code class="language-javascript">// 간단한 JavaScript 예시
+const greet = (name) => {
+  return `안녕하세요, ${name}님!`;
+};
+
+console.log(greet('블로거'));</code></pre>
+
+      <h3>인용구 예시</h3>
+      <blockquote>글쓰기는 생각을 정리하는 가장 좋은 방법입니다.</blockquote>
+
+      <h2>시작하기</h2>
+      <p>우측 상단의 <strong>편집</strong> 버튼을 클릭하면 이 페이지의 모든 텍스트를 직접 수정할 수 있습니다. 수정한 내용은 자동으로 브라우저 로컬 스토리지에 저장됩니다.</p>
+    </div>
+
   </main>
+</div>
 
-  <!-- ★ 5. 맨 위로 가기 버튼 ★ -->
-  <button id="scroll-to-top" type="button" aria-label="맨 위로 가기">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-         stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-         width="18" height="18">
-      <polyline points="18 15 12 9 6 15"/>
+
+<!-- ═══════════════════════════════════════════
+     디자인 설정 패널
+═══════════════════════════════════════════ -->
+<div id="overlay" onclick="closeDesignPanel()"></div>
+
+<aside id="design-panel" role="dialog" aria-label="디자인 설정">
+  <div id="design-panel-header">
+    <h3>디자인 설정</h3>
+    <button id="design-panel-close" onclick="closeDesignPanel()">×</button>
+  </div>
+  <div id="design-panel-body">
+
+    <!-- 테마 색상 -->
+    <div class="dp-section">
+      <div class="dp-section-title">포인트 컬러</div>
+      <div class="color-presets" id="color-presets">
+        <div class="color-preset selected" data-color="#2563eb" style="background:#2563eb" title="블루"></div>
+        <div class="color-preset" data-color="#7c3aed" style="background:#7c3aed" title="퍼플"></div>
+        <div class="color-preset" data-color="#059669" style="background:#059669" title="그린"></div>
+        <div class="color-preset" data-color="#dc2626" style="background:#dc2626" title="레드"></div>
+        <div class="color-preset" data-color="#d97706" style="background:#d97706" title="앰버"></div>
+        <div class="color-preset" data-color="#0891b2" style="background:#0891b2" title="사이언"></div>
+        <div class="color-preset" data-color="#db2777" style="background:#db2777" title="핑크"></div>
+        <div class="color-preset" data-color="#334155" style="background:#334155" title="슬레이트"></div>
+      </div>
+      <div class="dp-row" style="margin-top:12px">
+        <span class="dp-label">직접 입력</span>
+        <input type="color" class="dp-color dp-control" id="custom-color" value="#2563eb" oninput="applyAccentColor(this.value)"/>
+      </div>
+    </div>
+
+    <!-- 폰트 -->
+    <div class="dp-section">
+      <div class="dp-section-title">폰트</div>
+      <div class="dp-row">
+        <span class="dp-label">제목 폰트</span>
+        <select class="dp-select dp-control" id="font-display-select" onchange="applyDisplayFont(this.value)">
+          <option value="'Nanum Myeongjo', serif">나눔명조</option>
+          <option value="'Noto Serif KR', serif">노토 세리프</option>
+          <option value="'Pretendard', sans-serif">프리텐다드</option>
+          <option value="Georgia, serif">Georgia</option>
+        </select>
+      </div>
+      <div class="dp-row">
+        <span class="dp-label">본문 폰트 크기</span>
+        <input type="range" class="dp-slider dp-control" id="font-size-slider"
+               min="14" max="20" value="16" step="1"
+               oninput="applyFontSize(this.value)"/>
+      </div>
+      <div class="dp-row">
+        <span class="dp-label" id="font-size-display">현재: 16px</span>
+      </div>
+      <div class="dp-row">
+        <span class="dp-label">줄 간격</span>
+        <input type="range" class="dp-slider dp-control" id="line-height-slider"
+               min="1.5" max="2.2" value="1.8" step="0.1"
+               oninput="applyLineHeight(this.value)"/>
+      </div>
+    </div>
+
+    <!-- 레이아웃 -->
+    <div class="dp-section">
+      <div class="dp-section-title">레이아웃</div>
+      <div class="dp-row">
+        <span class="dp-label">본문 최대 너비</span>
+        <select class="dp-select dp-control" id="content-width-select" onchange="applyContentWidth(this.value)">
+          <option value="640px">좁게 (640px)</option>
+          <option value="720px" selected>기본 (720px)</option>
+          <option value="820px">넓게 (820px)</option>
+          <option value="960px">매우 넓게 (960px)</option>
+        </select>
+      </div>
+      <div class="dp-row">
+        <span class="dp-label">사이드바 너비</span>
+        <input type="range" class="dp-slider dp-control" id="sidebar-width-slider"
+               min="200" max="320" value="260" step="10"
+               oninput="applySidebarWidth(this.value)"/>
+      </div>
+    </div>
+
+    <!-- 설정 저장/초기화 -->
+    <div class="dp-section">
+      <div class="dp-section-title">저장</div>
+      <div class="dp-row">
+        <button onclick="saveDesign()" style="flex:1;padding:9px;border-radius:var(--r-md);border:none;background:var(--accent);color:#fff;font-size:13px;font-weight:600;cursor:pointer;">
+          디자인 저장
+        </button>
+      </div>
+      <div class="dp-row">
+        <button onclick="resetDesign()" style="flex:1;padding:9px;border-radius:var(--r-md);border:1px solid var(--border-2);background:transparent;color:var(--text-2);font-size:13px;cursor:pointer;">
+          기본값으로 초기화
+        </button>
+      </div>
+    </div>
+
+  </div>
+</aside>
+
+
+<!-- 맨 위로 가기 버튼 -->
+<button id="scroll-top" aria-label="맨 위로">
+  <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>
+</button>
+
+<!-- 토스트 -->
+<div id="toast">
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+  <span id="toast-msg">저장되었습니다</span>
+</div>
+
+
+<script>
+/* ═══════════════════════════════════════════
+   데이터 스토어 (localStorage)
+   ─────────────────────────────────────────
+   저장 키:
+     blog_theme   : 'light' | 'dark'
+     blog_design  : JSON (디자인 설정)
+     blog_content : JSON (포스트별 콘텐츠)
+     blog_nav     : JSON (사이드바 아이템)
+     blog_site    : JSON (블로그 제목, 태그라인)
+═══════════════════════════════════════════ */
+
+// ── 현재 활성 페이지 ID ─────────────────
+let currentPage = 'home';
+
+// ── 기본 콘텐츠 데이터 ──────────────────
+const DEFAULT_CONTENT = {
+  home: {
+    category: 'Tutorial',
+    title: '나의 첫 번째 블로그 포스트',
+    date: '2025년 6월 5일',
+    body: document.getElementById('post-body')?.innerHTML || ''
+  }
+};
+
+// ══════════════════════════════════════════
+// 1. 테마 (다크모드)
+// ══════════════════════════════════════════
+(function initTheme() {
+  const saved = localStorage.getItem('blog_theme');
+  const prefer = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  applyTheme(saved || prefer);
+})();
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  const sunIcon  = document.getElementById('icon-sun');
+  const moonIcon = document.getElementById('icon-moon');
+  const label    = document.getElementById('theme-label');
+  if (theme === 'dark') {
+    sunIcon.style.display  = 'none';
+    moonIcon.style.display = 'block';
+    label.textContent = '라이트 모드';
+  } else {
+    sunIcon.style.display  = 'block';
+    moonIcon.style.display = 'none';
+    label.textContent = '다크 모드';
+  }
+}
+
+document.getElementById('theme-btn').addEventListener('click', function() {
+  const cur  = document.documentElement.getAttribute('data-theme');
+  const next = cur === 'dark' ? 'light' : 'dark';
+  applyTheme(next);
+  localStorage.setItem('blog_theme', next);
+  showToast(next === 'dark' ? '다크 모드로 전환했습니다' : '라이트 모드로 전환했습니다');
+});
+
+
+// ══════════════════════════════════════════
+// 2. 디자인 설정
+// ══════════════════════════════════════════
+function applyAccentColor(color) {
+  document.documentElement.style.setProperty('--accent', color);
+  // 밝기에 따라 hover 색상 계산
+  document.documentElement.style.setProperty('--accent-2', shadeColor(color, -20));
+  document.documentElement.style.setProperty('--accent-bg', shadeColor(color, 85));
+  document.documentElement.style.setProperty('--accent-text', shadeColor(color, -30));
+  // 프리셋 선택 상태 업데이트
+  document.querySelectorAll('.color-preset').forEach(p => {
+    p.classList.toggle('selected', p.dataset.color === color);
+  });
+  document.getElementById('custom-color').value = color;
+}
+
+function shadeColor(hex, pct) {
+  // hex를 RGB로 변환 후 밝기 조정
+  const num = parseInt(hex.replace('#',''), 16);
+  const r = Math.min(255, Math.max(0, (num>>16) + Math.round(255 * pct/100)));
+  const g = Math.min(255, Math.max(0, ((num>>8)&0xff) + Math.round(255 * pct/100)));
+  const b = Math.min(255, Math.max(0, (num&0xff) + Math.round(255 * pct/100)));
+  return `#${((1<<24)|(r<<16)|(g<<8)|b).toString(16).slice(1)}`;
+}
+
+document.querySelectorAll('.color-preset').forEach(preset => {
+  preset.addEventListener('click', function() {
+    applyAccentColor(this.dataset.color);
+  });
+});
+
+function applyDisplayFont(font) {
+  document.documentElement.style.setProperty('--font-display', font);
+}
+
+function applyFontSize(size) {
+  document.documentElement.style.setProperty('--font-size-base', size + 'px');
+  document.getElementById('font-size-display').textContent = `현재: ${size}px`;
+}
+
+function applyLineHeight(lh) {
+  document.documentElement.style.setProperty('--line-height-base', lh);
+}
+
+function applyContentWidth(w) {
+  document.documentElement.style.setProperty('--content-max-w', w);
+}
+
+function applySidebarWidth(w) {
+  document.documentElement.style.setProperty('--sidebar-w', w + 'px');
+}
+
+function saveDesign() {
+  const design = {
+    accent:       getComputedStyle(document.documentElement).getPropertyValue('--accent').trim(),
+    fontDisplay:  getComputedStyle(document.documentElement).getPropertyValue('--font-display').trim(),
+    fontSize:     document.getElementById('font-size-slider').value,
+    lineHeight:   document.getElementById('line-height-slider').value,
+    contentWidth: document.getElementById('content-width-select').value,
+    sidebarWidth: document.getElementById('sidebar-width-slider').value,
+  };
+  localStorage.setItem('blog_design', JSON.stringify(design));
+  showToast('디자인이 저장되었습니다');
+}
+
+function resetDesign() {
+  localStorage.removeItem('blog_design');
+  location.reload();
+}
+
+function toggleDesignPanel() {
+  document.getElementById('design-panel').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('visible');
+}
+
+function closeDesignPanel() {
+  document.getElementById('design-panel').classList.remove('open');
+  document.getElementById('overlay').classList.remove('visible');
+}
+
+// 디자인 설정 복원
+(function loadDesign() {
+  const saved = localStorage.getItem('blog_design');
+  if (!saved) return;
+  try {
+    const d = JSON.parse(saved);
+    if (d.accent)       applyAccentColor(d.accent);
+    if (d.fontDisplay)  { applyDisplayFont(d.fontDisplay); document.getElementById('font-display-select').value = d.fontDisplay; }
+    if (d.fontSize)     { applyFontSize(d.fontSize); document.getElementById('font-size-slider').value = d.fontSize; }
+    if (d.lineHeight)   { applyLineHeight(d.lineHeight); document.getElementById('line-height-slider').value = d.lineHeight; }
+    if (d.contentWidth) { applyContentWidth(d.contentWidth); document.getElementById('content-width-select').value = d.contentWidth; }
+    if (d.sidebarWidth) { applySidebarWidth(d.sidebarWidth); document.getElementById('sidebar-width-slider').value = d.sidebarWidth; }
+  } catch(e) {}
+})();
+
+
+// ══════════════════════════════════════════
+// 3. 편집 모드
+// ══════════════════════════════════════════
+let isEditMode = false;
+
+// contenteditable 대상 요소들
+const EDITABLE_IDS = [
+  'blog-title', 'blog-tagline',
+  'post-category', 'post-title', 'post-date', 'post-body'
+];
+
+function toggleEditMode() {
+  isEditMode = !isEditMode;
+  const btn      = document.getElementById('edit-mode-btn');
+  const label    = document.getElementById('edit-btn-label');
+  const banner   = document.getElementById('edit-banner');
+  const toolbar  = document.getElementById('editor-toolbar');
+  const addBtn   = document.getElementById('add-nav-item');
+
+  btn.classList.toggle('active', isEditMode);
+  label.textContent = isEditMode ? '편집 완료' : '편집';
+  banner.classList.toggle('visible', isEditMode);
+  toolbar.classList.toggle('visible', isEditMode);
+  document.body.classList.toggle('edit-mode', isEditMode);
+
+  // 사이드바 삭제 버튼 표시
+  document.querySelectorAll('.nav-delete').forEach(b => {
+    b.style.display = isEditMode ? 'flex' : 'none';
+  });
+  addBtn.style.display = isEditMode ? 'flex' : 'none';
+
+  // nav 라벨 편집 가능
+  document.querySelectorAll('.nav-label').forEach(el => {
+    el.contentEditable = isEditMode ? 'true' : 'false';
+  });
+
+  // 콘텐츠 편집 가능
+  EDITABLE_IDS.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.contentEditable = isEditMode ? 'true' : 'false';
+  });
+
+  if (!isEditMode) {
+    saveContent();   // 편집 완료 시 자동 저장
+    showToast('변경사항이 저장되었습니다');
+  }
+}
+
+// execCommand 래퍼 (본문 서식)
+function execCmd(cmd, val) {
+  document.getElementById('post-body').focus();
+  document.execCommand(cmd, false, val || null);
+}
+
+function insertHeading(level) {
+  document.getElementById('post-body').focus();
+  document.execCommand('formatBlock', false, `h${level}`);
+}
+
+function insertBlockquote() {
+  document.getElementById('post-body').focus();
+  document.execCommand('formatBlock', false, 'blockquote');
+}
+
+function insertCodeBlock() {
+  const body = document.getElementById('post-body');
+  body.focus();
+  const sel  = window.getSelection();
+  const text = sel.toString() || '// 여기에 코드 입력';
+  const wrapper = document.createElement('div');
+  wrapper.className = 'code-wrapper';
+  const pre  = document.createElement('pre');
+  const code = document.createElement('code');
+  code.className = 'language-js';
+  code.textContent = text;
+  pre.appendChild(code);
+  wrapper.appendChild(pre);
+  if (!sel.rangeCount) { body.appendChild(wrapper); return; }
+  const range = sel.getRangeAt(0);
+  range.deleteContents();
+  range.insertNode(wrapper);
+  initCodeCopy(); // 복사 버튼 재부착
+}
+
+function resetBody() {
+  const d = DEFAULT_CONTENT[currentPage];
+  if (d) document.getElementById('post-body').innerHTML = d.body;
+}
+
+
+// ══════════════════════════════════════════
+// 4. 콘텐츠 저장 / 로드
+// ══════════════════════════════════════════
+function saveContent() {
+  // 현재 페이지 데이터 저장
+  const content = JSON.parse(localStorage.getItem('blog_content') || '{}');
+  content[currentPage] = {
+    category: document.getElementById('post-category').innerText.trim(),
+    title:    document.getElementById('post-title').innerText.trim(),
+    date:     document.getElementById('post-date').innerText.trim(),
+    body:     document.getElementById('post-body').innerHTML,
+  };
+  localStorage.setItem('blog_content', JSON.stringify(content));
+
+  // 사이트 메타 저장
+  const site = {
+    title:    document.getElementById('blog-title').innerText.trim(),
+    tagline:  document.getElementById('blog-tagline').innerText.trim(),
+  };
+  localStorage.setItem('blog_site', JSON.stringify(site));
+
+  // 내비게이션 저장
+  saveNav();
+}
+
+function loadContent(pageId) {
+  const content = JSON.parse(localStorage.getItem('blog_content') || '{}');
+  const d = content[pageId] || DEFAULT_CONTENT[pageId];
+  if (!d) {
+    // 새 페이지 기본값
+    document.getElementById('post-category').innerText = '새 글';
+    document.getElementById('post-title').innerText    = '새 페이지';
+    document.getElementById('post-date').innerText     = new Date().toLocaleDateString('ko-KR', {year:'numeric',month:'long',day:'numeric'});
+    document.getElementById('post-body').innerHTML     = '<p>여기에 내용을 작성하세요.</p>';
+    return;
+  }
+  document.getElementById('post-category').innerText = d.category || '';
+  document.getElementById('post-title').innerText    = d.title    || '';
+  document.getElementById('post-date').innerText     = d.date     || '';
+  document.getElementById('post-body').innerHTML     = d.body     || '';
+  initCodeCopy();
+  updateReadTime();
+}
+
+// 사이트 메타 복원
+(function loadSiteMeta() {
+  const site = JSON.parse(localStorage.getItem('blog_site') || '{}');
+  if (site.title)   document.getElementById('blog-title').innerText   = site.title;
+  if (site.tagline) document.getElementById('blog-tagline').innerText = site.tagline;
+  if (site.title)   document.title = site.title;
+})();
+
+// 홈 콘텐츠 초기 로드
+loadContent('home');
+
+
+// ══════════════════════════════════════════
+// 5. 내비게이션 (사이드바)
+// ══════════════════════════════════════════
+function saveNav() {
+  const items = [];
+  document.querySelectorAll('#nav-items-list .nav-item').forEach(item => {
+    items.push({
+      page:  item.dataset.page,
+      label: item.querySelector('.nav-label').innerText.trim(),
+      icon:  item.querySelector('.nav-icon')?.outerHTML || '',
+    });
+  });
+  localStorage.setItem('blog_nav', JSON.stringify(items));
+}
+
+// nav 클릭으로 페이지 전환
+document.getElementById('nav-items-list').addEventListener('click', function(e) {
+  // 삭제 버튼은 무시
+  if (e.target.closest('.nav-delete')) {
+    const item = e.target.closest('.nav-item');
+    if (document.querySelectorAll('.nav-item').length <= 1) {
+      showToast('마지막 페이지는 삭제할 수 없습니다');
+      return;
+    }
+    if (confirm(`"${item.querySelector('.nav-label').innerText}" 페이지를 삭제할까요?`)) {
+      item.remove();
+      saveNav();
+      // 첫 번째 남은 항목으로 이동
+      const first = document.querySelector('.nav-item');
+      if (first) navigateTo(first.dataset.page, first.querySelector('.nav-label').innerText);
+    }
+    return;
+  }
+  // nav 라벨 편집 중이면 무시
+  if (isEditMode && e.target.classList.contains('nav-label')) return;
+
+  const item = e.target.closest('.nav-item');
+  if (!item) return;
+  navigateTo(item.dataset.page, item.querySelector('.nav-label').innerText);
+});
+
+function navigateTo(pageId, label) {
+  // 현재 페이지 저장 (편집 모드였다면)
+  if (isEditMode) saveContent();
+
+  currentPage = pageId;
+  // active 클래스
+  document.querySelectorAll('.nav-item').forEach(i => i.classList.toggle('active', i.dataset.page === pageId));
+  // 브레드크럼
+  document.getElementById('breadcrumb-current').textContent = label;
+  // 콘텐츠 로드
+  loadContent(pageId);
+  // 편집 모드 OFF
+  if (isEditMode) toggleEditMode();
+  // 맨 위로
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// 새 페이지 추가
+document.getElementById('add-nav-item').addEventListener('click', function() {
+  const pageId = 'page_' + Date.now();
+  const label  = '새 페이지 ' + (document.querySelectorAll('.nav-item').length + 1);
+  const item   = createNavItem(pageId, label);
+  document.getElementById('nav-items-list').appendChild(item);
+  navigateTo(pageId, label);
+  saveNav();
+  showToast('새 페이지를 추가했습니다');
+});
+
+function createNavItem(pageId, label) {
+  const div = document.createElement('div');
+  div.className = 'nav-item';
+  div.dataset.page = pageId;
+  div.innerHTML = `
+    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+      <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
     </svg>
-  </button>
+    <span class="nav-label" contenteditable="${isEditMode}">${label}</span>
+    <button class="nav-delete" style="display:${isEditMode?'flex':'none'}" aria-label="삭제">×</button>
+  `;
+  // 라벨 편집 시 저장
+  div.querySelector('.nav-label').addEventListener('blur', saveNav);
+  return div;
+}
 
-  <!-- ★ 6. JS 연결 (반드시 </body> 바로 위) ★ -->
-  <script src="blog-features.js"></script>
+// 기존 nav 라벨에 blur 저장 이벤트
+document.querySelectorAll('.nav-label').forEach(el => {
+  el.addEventListener('blur', saveNav);
+});
 
+// nav 복원
+(function loadNav() {
+  const saved = localStorage.getItem('blog_nav');
+  if (!saved) return;
+  try {
+    const items = JSON.parse(saved);
+    const list  = document.getElementById('nav-items-list');
+    list.innerHTML = '';
+    items.forEach(item => {
+      const div = createNavItem(item.page, item.label);
+      list.appendChild(div);
+    });
+  } catch(e) {}
+})();
+
+
+// ══════════════════════════════════════════
+// 6. 코드 블록 복사 버튼
+// ══════════════════════════════════════════
+function initCodeCopy() {
+  document.querySelectorAll('pre').forEach(pre => {
+    if (pre.parentElement?.classList.contains('code-wrapper')) return;
+    const wrapper = document.createElement('div');
+    wrapper.className = 'code-wrapper';
+    pre.parentNode.insertBefore(wrapper, pre);
+    wrapper.appendChild(pre);
+
+    const codeEl = pre.querySelector('code');
+    const langClass = codeEl && Array.from(codeEl.classList).find(c => c.startsWith('language-'));
+    if (langClass) {
+      const badge = document.createElement('span');
+      badge.className = 'code-lang-badge';
+      badge.textContent = langClass.replace('language-', '');
+      wrapper.appendChild(badge);
+    }
+
+    const btn = document.createElement('button');
+    btn.className = 'copy-btn';
+    btn.innerHTML = `<svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>복사</span>`;
+    btn.setAttribute('type', 'button');
+    wrapper.appendChild(btn);
+
+    btn.addEventListener('click', async () => {
+      const text = codeEl ? codeEl.innerText : pre.innerText;
+      try { await navigator.clipboard.writeText(text); }
+      catch { const ta=document.createElement('textarea'); ta.value=text; ta.style.cssText='position:fixed;opacity:0'; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); }
+      btn.innerHTML = `<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><span>복사됨!</span>`;
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.innerHTML = `<svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>복사</span>`;
+        btn.classList.remove('copied');
+      }, 2000);
+    });
+  });
+}
+
+initCodeCopy();
+
+
+// ══════════════════════════════════════════
+// 7. 맨 위로 가기
+// ══════════════════════════════════════════
+const scrollTopBtn = document.getElementById('scroll-top');
+window.addEventListener('scroll', () => {
+  scrollTopBtn.classList.toggle('visible', window.scrollY > 300);
+}, { passive: true });
+scrollTopBtn.addEventListener('click', () => window.scrollTo({ top:0, behavior:'smooth' }));
+
+
+// ══════════════════════════════════════════
+// 8. 읽기 시간 자동 계산
+// ══════════════════════════════════════════
+function updateReadTime() {
+  const body  = document.getElementById('post-body');
+  const words = (body.innerText || '').trim().split(/\s+/).length;
+  const mins  = Math.max(1, Math.round(words / 200));
+  document.getElementById('post-readtime').textContent = `읽는 시간 약 ${mins}분`;
+}
+
+// 본문 변경 시 읽기 시간 업데이트
+document.getElementById('post-body').addEventListener('input', updateReadTime);
+
+
+// ══════════════════════════════════════════
+// 9. 모바일 사이드바 토글
+// ══════════════════════════════════════════
+document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+  document.getElementById('sidebar').classList.toggle('open');
+});
+
+
+// ══════════════════════════════════════════
+// 10. 토스트 알림
+// ══════════════════════════════════════════
+let toastTimer;
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+
+// ══════════════════════════════════════════
+// 11. 자동 저장 (30초마다)
+// ══════════════════════════════════════════
+setInterval(() => {
+  if (isEditMode) {
+    saveContent();
+  }
+}, 30000);
+
+// 페이지 떠날 때 저장
+window.addEventListener('beforeunload', () => {
+  if (isEditMode) saveContent();
+});
+</script>
 </body>
 </html>
