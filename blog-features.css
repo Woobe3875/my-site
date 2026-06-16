@@ -1,21 +1,6 @@
 /* ============================================================
    blog-features.css
-   GitHub Pages 블로그용 기능 스타일시트
-   ─────────────────────────────────────────────────────────────
-   포함된 기능:
-     1. CSS 변수 (라이트/다크 모드 공통 토큰)
-     2. 다크 모드 전환 버튼
-     3. 자동 목차(TOC)
-     4. 맨 위로 가기 버튼
-     5. 코드 블록 복사 버튼
-   ============================================================ */
-
-
-/* ============================================================
-   1. CSS 변수 & 테마 토큰
-   ─────────────────────────────────────────────────────────────
-   :root → 라이트 모드 기본값
-   [data-theme="dark"] → 다크 모드 오버라이드
+   GitHub Pages 블로그용 기능 스타일시트 + 단어장/퀴즈 통합본
    ============================================================ */
 
 :root {
@@ -68,395 +53,130 @@
   --bg-base:        #141414;
   --bg-surface:     #1c1c1a;
   --bg-elevated:    #252522;
-
   --text-primary:   #f0efe8;
   --text-secondary: #a8a89e;
   --text-muted:     #68685e;
-
   --accent:         #5b8fee;
   --accent-hover:   #7aaaf5;
   --accent-light:   #1a2a44;
-
   --border-soft:    rgba(255, 255, 255, 0.07);
   --border-medium:  rgba(255, 255, 255, 0.12);
-
   --btn-bg:         #252522;
   --btn-shadow:     0 2px 12px rgba(0, 0, 0, 0.40), 0 1px 3px rgba(0, 0, 0, 0.30);
   --btn-shadow-hover: 0 4px 20px rgba(0, 0, 0, 0.55), 0 2px 6px rgba(0, 0, 0, 0.35);
-
   --toc-bg:         #1c1c1a;
 }
 
-
-/* ============================================================
-   2. 다크 모드 전환 버튼
-   ─────────────────────────────────────────────────────────────
-   위치: 보통 헤더 내 또는 우상단 고정
-   HTML: <button id="theme-toggle" ...>
-   ============================================================ */
-
+/* 2. 다크 모드 전환 버튼 */
 #theme-toggle {
-  /* 고정 위치 – 필요에 따라 position을 static으로 바꾸고
-     헤더 flex 안에 넣어도 됩니다 */
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 1000;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-
-  padding: 8px 14px;
-  border: 1px solid var(--border-medium);
-  border-radius: var(--radius-pill);
-  background: var(--btn-bg);
-  color: var(--text-secondary);
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  box-shadow: var(--btn-shadow);
-  transition:
-    background var(--transition-fast),
-    color var(--transition-fast),
-    border-color var(--transition-fast),
-    box-shadow var(--transition-fast);
-
-  /* 텍스트 선택 방지 */
-  user-select: none;
-  -webkit-user-select: none;
+  position: fixed; top: 20px; right: 20px; z-index: 1000;
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  padding: 8px 14px; border: 1px solid var(--border-medium); border-radius: var(--radius-pill);
+  background: var(--btn-bg); color: var(--text-secondary); font-size: 13px; font-weight: 500;
+  cursor: pointer; box-shadow: var(--btn-shadow);
+  transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+  user-select: none; -webkit-user-select: none;
 }
-
-#theme-toggle:hover {
-  color: var(--text-primary);
-  box-shadow: var(--btn-shadow-hover);
-  border-color: var(--border-medium);
-}
-
-#theme-toggle:active {
-  transform: scale(0.96);
-}
-
-/* 아이콘: 해(라이트) / 달(다크) SVG 스팬 */
-#theme-toggle .icon-sun,
-#theme-toggle .icon-moon {
-  display: flex;
-  width: 16px;
-  height: 16px;
-  flex-shrink: 0;
-  transition: opacity var(--transition-fast), transform var(--transition-fast);
-}
-
-/* 라이트 모드 → 달 아이콘 숨김, 해 아이콘 표시 */
+#theme-toggle:hover { color: var(--text-primary); box-shadow: var(--btn-shadow-hover); border-color: var(--border-medium); }
+#theme-toggle:active { transform: scale(0.96); }
+#theme-toggle .icon-sun, #theme-toggle .icon-moon { display: flex; width: 16px; height: 16px; flex-shrink: 0; transition: opacity var(--transition-fast), transform var(--transition-fast); }
 [data-theme="light"] #theme-toggle .icon-moon { display: none; }
 [data-theme="dark"]  #theme-toggle .icon-sun  { display: none; }
+#theme-toggle .toggle-label { font-size: 13px; letter-spacing: -0.01em; }
 
-/* 버튼 레이블 텍스트 */
-#theme-toggle .toggle-label {
-  font-size: 13px;
-  letter-spacing: -0.01em;
-}
-
-
-/* ============================================================
-   3. 자동 목차 (TOC – Table of Contents)
-   ─────────────────────────────────────────────────────────────
-   사이드바로 우측 고정 / 모바일에서는 숨김
-   ============================================================ */
-
+/* 3. 자동 목차 (TOC) */
 #toc-sidebar {
-  position: fixed;
-  top: 80px;                          /* 헤더 높이에 맞게 조정 */
-  right: max(20px, calc((100vw - 780px) / 2 - var(--toc-width) - 20px));
-  width: var(--toc-width);
-  max-height: calc(100vh - 120px);
-  overflow-y: auto;
-  overflow-x: hidden;
-
-  background: var(--toc-bg);
-  border: 1px solid var(--border-soft);
-  border-radius: var(--radius-lg);
-  padding: 18px 16px;
-
-  font-size: 13px;
-  line-height: 1.5;
-
-  /* 스크롤바 커스텀 */
-  scrollbar-width: thin;
-  scrollbar-color: var(--border-medium) transparent;
-
-  transition: background var(--transition-std), border-color var(--transition-std);
-
-  /* 콘텐츠가 좁을 때는 자동으로 숨김 */
-  opacity: 1;
-  pointer-events: auto;
+  position: fixed; top: 80px; right: max(20px, calc((100vw - 780px) / 2 - var(--toc-width) - 20px));
+  width: var(--toc-width); max-height: calc(100vh - 120px); overflow-y: auto; overflow-x: hidden;
+  background: var(--toc-bg); border: 1px solid var(--border-soft); border-radius: var(--radius-lg); padding: 18px 16px;
+  font-size: 13px; line-height: 1.5; scrollbar-width: thin; scrollbar-color: var(--border-medium) transparent;
+  transition: background var(--transition-std), border-color var(--transition-std); opacity: 1; pointer-events: auto;
 }
+#toc-sidebar::-webkit-scrollbar { width: 4px; }
+#toc-sidebar::-webkit-scrollbar-track { background: transparent; }
+#toc-sidebar::-webkit-scrollbar-thumb { background: var(--border-medium); border-radius: 4px; }
+#toc-sidebar .toc-title { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin: 0 0 12px; padding-bottom: 10px; border-bottom: 1px solid var(--border-soft); }
+#toc-sidebar ul { list-style: none; margin: 0; padding: 0; }
+#toc-sidebar li { margin: 0; }
+#toc-sidebar a { display: block; padding: 5px 8px; border-radius: var(--radius-sm); color: var(--text-secondary); text-decoration: none; font-size: 13px; line-height: 1.45; border-left: 2px solid transparent; transition: color var(--transition-fast), background var(--transition-fast), border-color var(--transition-fast); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#toc-sidebar li[data-level="3"] a { padding-left: 20px; font-size: 12px; color: var(--text-muted); }
+#toc-sidebar a:hover { color: var(--text-primary); background: var(--bg-elevated); }
+#toc-sidebar a.toc-active { color: var(--accent); border-left-color: var(--accent); background: var(--accent-light); font-weight: 500; }
+@media (max-width: 1100px) { #toc-sidebar { display: none; } }
 
-/* 스크롤바 (Chrome) */
-#toc-sidebar::-webkit-scrollbar {
-  width: 4px;
-}
-#toc-sidebar::-webkit-scrollbar-track {
-  background: transparent;
-}
-#toc-sidebar::-webkit-scrollbar-thumb {
-  background: var(--border-medium);
-  border-radius: 4px;
-}
-
-/* TOC 제목 */
-#toc-sidebar .toc-title {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  margin: 0 0 12px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid var(--border-soft);
-}
-
-/* 목차 항목 목록 */
-#toc-sidebar ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-#toc-sidebar li {
-  margin: 0;
-}
-
-/* 목차 링크 */
-#toc-sidebar a {
-  display: block;
-  padding: 5px 8px;
-  border-radius: var(--radius-sm);
-  color: var(--text-secondary);
-  text-decoration: none;
-  font-size: 13px;
-  line-height: 1.45;
-  border-left: 2px solid transparent;
-  transition:
-    color var(--transition-fast),
-    background var(--transition-fast),
-    border-color var(--transition-fast);
-
-  /* 너무 긴 제목 말줄임 */
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* H3는 들여쓰기 */
-#toc-sidebar li[data-level="3"] a {
-  padding-left: 20px;
-  font-size: 12px;
-  color: var(--text-muted);
-}
-
-#toc-sidebar a:hover {
-  color: var(--text-primary);
-  background: var(--bg-elevated);
-}
-
-/* 현재 섹션 하이라이트 */
-#toc-sidebar a.toc-active {
-  color: var(--accent);
-  border-left-color: var(--accent);
-  background: var(--accent-light);
-  font-weight: 500;
-}
-
-/* 모바일: TOC 숨김 (1100px 이하) */
-@media (max-width: 1100px) {
-  #toc-sidebar {
-    display: none;
-  }
-}
-
-
-/* ============================================================
-   4. 맨 위로 가기 버튼 (Scroll to Top)
-   ─────────────────────────────────────────────────────────────
-   스크롤 300px 이상 → 나타남 / 클릭 → 최상단으로 스무스 스크롤
-   ============================================================ */
-
+/* 4. 맨 위로 가기 버튼 */
 #scroll-to-top {
-  position: fixed;
-  bottom: 32px;
-  right: 28px;
-  z-index: 999;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  width: 44px;
-  height: 44px;
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--border-medium);
-  background: var(--btn-bg);
-  color: var(--text-secondary);
-  cursor: pointer;
-  box-shadow: var(--btn-shadow);
-
-  /* 기본: 숨김 */
-  opacity: 0;
-  transform: translateY(12px);
-  pointer-events: none;
-  transition:
-    opacity var(--transition-std),
-    transform var(--transition-std),
-    box-shadow var(--transition-fast),
-    color var(--transition-fast);
+  position: fixed; bottom: 32px; right: 28px; z-index: 999;
+  display: flex; align-items: center; justify-content: center; width: 44px; height: 44px;
+  border-radius: var(--radius-pill); border: 1px solid var(--border-medium); background: var(--btn-bg); color: var(--text-secondary); cursor: pointer; box-shadow: var(--btn-shadow);
+  opacity: 0; transform: translateY(12px); pointer-events: none; transition: opacity var(--transition-std), transform var(--transition-std), box-shadow var(--transition-fast), color var(--transition-fast);
 }
+#scroll-to-top.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
+#scroll-to-top:hover { color: var(--accent); box-shadow: var(--btn-shadow-hover); }
+#scroll-to-top:active { transform: scale(0.94); }
+#scroll-to-top svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
-/* 표시 상태 (.visible 클래스 JS로 추가) */
-#scroll-to-top.visible {
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: auto;
-}
+/* 5. 코드 블록 */
+.code-wrapper { position: relative; margin: 1.5em 0; border-radius: var(--radius-md); overflow: hidden; }
+.code-wrapper pre { margin: 0; padding: 44px 20px 20px 20px; background: var(--code-bg); color: var(--code-text); border: 1px solid var(--code-border); border-radius: var(--radius-md); overflow-x: auto; font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace; font-size: 14px; line-height: 1.65; }
+.copy-btn { position: absolute; top: 10px; right: 10px; display: flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: var(--radius-sm); border: 1px solid rgba(255, 255, 255, 0.12); background: rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.60); font-size: 12px; font-weight: 500; cursor: pointer; letter-spacing: 0.01em; transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast); user-select: none; -webkit-user-select: none; }
+.copy-btn:hover { background: rgba(255, 255, 255, 0.16); color: rgba(255, 255, 255, 0.90); border-color: rgba(255, 255, 255, 0.22); }
+.copy-btn:active { transform: scale(0.96); }
+.copy-btn.copied { background: rgba(30, 180, 100, 0.18); color: #6ee7b7; border-color: rgba(110, 231, 183, 0.30); }
+.copy-btn svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.code-lang-badge { position: absolute; top: 10px; left: 14px; font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: rgba(255, 255, 255, 0.35); pointer-events: none; font-family: 'JetBrains Mono', monospace; }
 
-#scroll-to-top:hover {
-  color: var(--accent);
-  box-shadow: var(--btn-shadow-hover);
-}
-
-#scroll-to-top:active {
-  transform: scale(0.94);
-}
-
-/* SVG 아이콘 */
-#scroll-to-top svg {
-  width: 18px;
-  height: 18px;
-  stroke: currentColor;
-  fill: none;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
+/* 6. 공통 유틸리티 */
+body { background-color: var(--bg-base); color: var(--text-primary); transition: background-color var(--transition-std), color var(--transition-std); }
 
 /* ============================================================
-   5. 코드 블록 복사 버튼
-   ─────────────────────────────────────────────────────────────
-   JS가 각 <pre> 태그 주위를 .code-wrapper로 감싼 뒤
-   copy 버튼을 삽입합니다.
+   7. 영어 단어장 전용 스타일
    ============================================================ */
-
-/* 코드 블록 래퍼 – position: relative 기준점 */
-.code-wrapper {
-  position: relative;
-  margin: 1.5em 0;
-  border-radius: var(--radius-md);
-  overflow: hidden;
-}
-
-/* 기존 <pre> 스타일 재정의 */
-.code-wrapper pre {
-  margin: 0;
-  padding: 20px 20px 20px 20px;
-  background: var(--code-bg);
-  color: var(--code-text);
-  border: 1px solid var(--code-border);
-  border-radius: var(--radius-md);
-  overflow-x: auto;
-  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
-  font-size: 14px;
-  line-height: 1.65;
-
-  /* 복사 버튼 공간 확보 */
-  padding-top: 44px;
-}
-
-/* 복사 버튼 */
-.copy-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-
-  display: flex;
-  align-items: center;
-  gap: 5px;
-
-  padding: 5px 10px;
-  border-radius: var(--radius-sm);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.60);
-  font-size: 12px;
-  font-weight: 500;
-  cursor: pointer;
-  letter-spacing: 0.01em;
-
-  transition:
-    background var(--transition-fast),
-    color var(--transition-fast),
-    border-color var(--transition-fast);
-
-  /* 텍스트 선택 방지 */
-  user-select: none;
-  -webkit-user-select: none;
-}
-
-.copy-btn:hover {
-  background: rgba(255, 255, 255, 0.16);
-  color: rgba(255, 255, 255, 0.90);
-  border-color: rgba(255, 255, 255, 0.22);
-}
-
-.copy-btn:active {
-  transform: scale(0.96);
-}
-
-/* 복사 완료 상태 */
-.copy-btn.copied {
-  background: rgba(30, 180, 100, 0.18);
-  color: #6ee7b7;
-  border-color: rgba(110, 231, 183, 0.30);
-}
-
-/* 복사 버튼 내 아이콘 */
-.copy-btn svg {
-  width: 13px;
-  height: 13px;
-  stroke: currentColor;
-  fill: none;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  flex-shrink: 0;
-}
-
-/* 언어 뱃지 (선택) – <code class="language-js"> 감지 시 표시 */
-.code-lang-badge {
-  position: absolute;
-  top: 10px;
-  left: 14px;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.35);
-  pointer-events: none;
-  font-family: 'JetBrains Mono', monospace;
-}
-
+.wordbook-container { display: flex; flex-direction: column; gap: 24px; margin-top: 20px; }
+.word-inputs { display: flex; gap: 10px; background: var(--bg-base); padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--border-medium); }
+.word-inputs input { flex: 1; padding: 10px; border-radius: var(--radius-sm); border: 1px solid var(--border-soft); background: var(--bg-surface); color: var(--text-primary); font-size: 14px; outline: none; }
+.word-inputs button { padding: 10px 20px; background: var(--accent); color: white; border: none; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; }
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; margin-top: 20px; }
+.word-card { height: 120px; perspective: 1000px; cursor: pointer; position: relative; }
+.card-inner { width: 100%; height: 100%; position: absolute; transform-style: preserve-3d; transition: transform 0.4s var(--transition-std); border-radius: var(--radius-md); box-shadow: var(--btn-shadow); }
+.word-card.flipped .card-inner { transform: rotateY(180deg); }
+.card-front, .card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; padding: 16px; border-radius: var(--radius-md); font-weight: 600; font-size: 16px; text-align: center; word-break: break-all; border: 1px solid var(--border-soft); }
+.card-front { background: var(--bg-base); color: var(--text-primary); }
+.card-back { background: var(--accent-light); color: var(--accent); transform: rotateY(180deg); font-size: 15px; }
+.card-del-btn { position: absolute; top: 6px; right: 6px; width: 20px; height: 20px; border-radius: 50%; border: none; background: rgba(0,0,0,0.05); color: var(--text-muted); display: flex; align-items: center; justify-content: center; font-size: 12px; z-index: 10; cursor: pointer; }
+[data-theme="dark"] .card-del-btn { background: rgba(255,255,255,0.1); }
+.card-del-btn:hover { background: #fecaca; color: #dc2626; }
 
 /* ============================================================
-   6. 공통 유틸리티 – 본문 body 전환 애니메이션
-   ─────────────────────────────────────────────────────────────
-   테마 변경 시 플래시 방지를 위한 색상 전환
+   8. 퀴즈 모드 전용 스타일
    ============================================================ */
-
-body {
-  background-color: var(--bg-base);
-  color: var(--text-primary);
-  transition:
-    background-color var(--transition-std),
-    color var(--transition-std);
-}
+.wordbook-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.quiz-start-btn { display: flex; align-items: center; gap: 6px; padding: 10px 18px; background: #10b981; color: white; border: none; border-radius: var(--radius-md); font-weight: 600; font-size: 14px; cursor: pointer; transition: background var(--transition-fast); }
+.quiz-start-btn:hover { background: #059669; }
+.quiz-container { background: var(--bg-base); padding: 32px; border-radius: var(--radius-lg); border: 1px solid var(--border-medium); box-shadow: var(--btn-shadow); margin-top: 20px; }
+.quiz-header { display: flex; justify-content: space-between; font-size: 13px; color: var(--text-muted); margin-bottom: 20px; border-bottom: 1px solid var(--border-soft); padding-bottom: 10px; }
+.quiz-count { font-weight: 600; color: var(--accent); }
+.quiz-card-box { text-align: center; padding: 44px 20px; background: var(--bg-surface); border-radius: var(--radius-md); margin-bottom: 24px; border: 1px solid var(--border-soft); }
+.quiz-question-word { font-size: 38px; color: var(--text-primary); letter-spacing: -0.01em; margin:0; }
+.quiz-input-group { display: flex; gap: 12px; }
+.quiz-input-group input { flex: 1; padding: 14px; border-radius: var(--radius-md); border: 1px solid var(--border-medium); background: var(--bg-base); color: var(--text-primary); font-size: 16px; outline: none; }
+.quiz-btn { padding: 12px 24px; border-radius: var(--radius-md); border: none; font-weight: 600; font-size: 15px; cursor: pointer; transition: all var(--transition-fast); }
+.quiz-btn.primary { background: var(--accent); color: white; }
+.quiz-btn.primary:hover { background: var(--accent-hover); }
+.quiz-btn.success { background: #10b981; color: white; width: 100%; margin-top: 12px; }
+.quiz-btn.danger-outline { background: transparent; border: 1px solid #ef4444; color: #ef4444; font-size: 12px; padding: 6px 12px; }
+.quiz-btn.danger-outline:hover { background: #fef2f2; }
+[data-theme="dark"] .quiz-btn.danger-outline:hover { background: #2a1414; }
+.quiz-result-box { padding: 18px; border-radius: var(--radius-md); margin-bottom: 14px; border: 1px solid transparent; text-align: left; }
+.quiz-result-box.correct { background: rgba(16, 185, 129, 0.1); border-color: #10b981; color: #065f46; }
+[data-theme="dark"] .quiz-result-box.correct { color: #34d399; }
+.quiz-result-box.wrong { background: rgba(239, 68, 68, 0.1); border-color: #ef4444; color: #991b1b; }
+[data-theme="dark"] .quiz-result-box.wrong { color: #f87171; }
+.result-status { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+.result-detail { font-size: 14px; margin-top: 4px; }
+.text-center { text-align: center; }
+.quiz-score-text { font-size: 22px; margin: 20px 0 12px; color: var(--text-primary); }
+.quiz-score-text strong { color: var(--accent); font-size: 36px; font-weight: 800; }
+.quiz-progress-bar-container { background: var(--bg-surface); height: 12px; border-radius: 6px; overflow: hidden; margin: 16px 0 20px; border: 1px solid var(--border-soft); }
+.quiz-progress-bar { background: var(--accent); height: 100%; transition: width 0.4s var(--transition-std); }
+.quiz-feedback { font-size: 15px; font-weight: 500; color: var(--text-secondary); margin-bottom: 24px; }
